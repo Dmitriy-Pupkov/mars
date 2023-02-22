@@ -2,7 +2,8 @@
 
 {% block content %}
 <h1>Jobs log</h1>
-<h3>Action # {{ item.id }}</h3>h3>
+{% for item in jobs %}
+<h3>Action # {{ item.id }}</h3>
 <table class="table">
   <thead>
     <tr>
