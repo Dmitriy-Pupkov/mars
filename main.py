@@ -1,10 +1,12 @@
 import datetime
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+
 from data import db_session
 from data.users import User
 from data.jobs import Jobs
 from flask import Flask, render_template, request, make_response, session, redirect
 
+from forms.jobs import JobForm
 from forms.user_form import LoginForm
 
 app = Flask(__name__)
@@ -15,17 +17,13 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
-@app.route('/')
-def root():
-    return render_template('index.html')
-
-
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
 
+@app.route('/')
 @app.route('/works_log')
 def works_log():
     session = db_session.create_session()
@@ -48,19 +46,24 @@ def login():
     return render_template('login.html', title='Авторизация', form=form)
 
 
-@app.route('/logout')
+@app.route('/add_job', methods=["GET", "POST"])
 @login_required
-def logout():
-    logout_user()
-    return redirect("/")
-
-
-@app.route("/session_test")
-def session_test():
-    visits_count = session.get('visits_count', 0)
-    session['visits_count'] = visits_count + 1
-    return make_response(
-        f"Вы пришли на эту страницу {visits_count + 1} раз")
+def add_job():
+    form = JobForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        job = Jobs()
+        job.job = form.job.data
+        job.work_size = form.work_size.data
+        job.collaborators = form.collaborators.data
+        job.start_date = form.start_date.data
+        job.end_date = form.end_date.data
+        job.is_finished = form.is_finished.data
+        current_user.jobs.append(job)
+        db_sess.merge(current_user)
+        db_sess.commit()
+        return redirect("/")
+    return render_template('add_job.html', title='Добавление работы', form=form)
 
 
 @app.route("/cookie_test")
