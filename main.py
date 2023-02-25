@@ -6,7 +6,7 @@ from data.jobs import Jobs
 from flask import Flask, render_template, request, make_response, session, redirect, jsonify
 from forms.jobs import JobForm
 from forms.user_form import LoginForm
-from flask import Blueprint as jobs_blueprint
+from jobs_api import blueprint as jobs_blueprint
 
 app = Flask(__name__)
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)

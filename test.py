@@ -26,10 +26,10 @@ def test_get_one_job(db_init):
     response = requests.get(base_url + '/api/jobs/1')
     db_sess = create_session()
     job = {
-            'job': db_sess.query(Jobs).get(1).to_dict(only=(
-                'id', 'team_leader', 'job', 'work_size', 'collaborators', 'start_date', 'end_date', 'is_finished',
-                'team_leader.id', 'team_leader.email', 'team_leader.name', 'team_leader.surname'))
-        }
+        'job': db_sess.query(Jobs).get(1).to_dict(only=(
+            'id', 'team_leader', 'job', 'work_size', 'collaborators', 'start_date', 'end_date', 'is_finished',
+            'team_leader.id', 'team_leader.email', 'team_leader.name', 'team_leader.surname'))
+    }
     assert response.json() == job
 
 
