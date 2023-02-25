@@ -1,13 +1,12 @@
 import datetime
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-
 from data import db_session
 from data.users import User
 from data.jobs import Jobs
-from flask import Flask, render_template, request, make_response, session, redirect
-
+from flask import Flask, render_template, request, make_response, session, redirect, jsonify
 from forms.jobs import JobForm
 from forms.user_form import LoginForm
+from flask import Blueprint as jobs_blueprint
 
 app = Flask(__name__)
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
@@ -82,8 +81,14 @@ def cookie_test():
     return res
 
 
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
+
+
 def main():
     db_session.global_init("db/blogs.db")
+    app.register_blueprint(jobs_blueprint)
     app.run()
 
 
