@@ -1,5 +1,7 @@
 import datetime
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+
+from api.users_resource import UsersResource, UsersListResource
 from data import db_session
 from data.users import User
 from data.jobs import Jobs
@@ -7,13 +9,14 @@ from flask import Flask, render_template, request, make_response, session, redir
 from forms.jobs import JobForm
 from forms.user_form import LoginForm
 from jobs_api import blueprint as jobs_blueprint
+from flask_restful import Api
 
 app = Flask(__name__)
-app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
-
 login_manager = LoginManager()
 login_manager.init_app(app)
+api = Api(app)
+
 
 
 @login_manager.user_loader
@@ -89,6 +92,8 @@ def not_found(error):
 def main():
     db_session.global_init("db/blogs.db")
     app.register_blueprint(jobs_blueprint)
+    api.add_resource(UsersResource, '/api/v2/users/<int:user_id>')
+    api.add_resource(UsersListResource, '/api/v2/users')
     app.run()
 
 
