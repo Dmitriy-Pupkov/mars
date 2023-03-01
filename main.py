@@ -1,11 +1,10 @@
-import datetime
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_login import LoginManager, login_user, login_required, current_user
 
-from api.users_resource import UsersResource, UsersListResource
+from users_resource import UsersResource, UsersListResource
 from data import db_session
 from data.users import User
 from data.jobs import Jobs
-from flask import Flask, render_template, request, make_response, session, redirect, jsonify
+from flask import Flask, render_template, request, make_response, redirect, jsonify
 from forms.jobs import JobForm
 from forms.user_form import LoginForm
 from jobs_api import blueprint as jobs_blueprint
