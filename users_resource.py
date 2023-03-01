@@ -11,18 +11,17 @@ def get_or_abort_if_user_not_found(user_id):
     user = session.query(User).get(user_id)
     if not user:
         abort(404, message=f"User {user_id} not found")
-    return user
+    return session, user
 
 
 class UsersResource(Resource):
     def get(self, user_id):
-        user = get_or_abort_if_user_not_found(user_id)
+        session, user = get_or_abort_if_user_not_found(user_id)
         return jsonify({'user': user.to_dict(
             rules=('-jobs',))})
 
     def delete(self, user_id):
-        user = get_or_abort_if_user_not_found(user_id)
-        session = db_session.create_session()
+        session, user = get_or_abort_if_user_not_found(user_id)
         session.delete(user)
         session.commit()
         return jsonify({'success': 'OK'})
@@ -38,6 +37,9 @@ class UsersListResource(Resource):
     def post(self):
         args = parser.parse_args()
         session = db_session.create_session()
+        user = session.query(User).get(args.get('id'))
+        if user:
+            return jsonify({'error': 'Id already exists'})
         user = User(
             id=args.get('id'),
             surname=args.get('surname'),
